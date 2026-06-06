@@ -6,6 +6,10 @@
   color-scheme: light;
 }
 
+:root.dark {
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -14,6 +18,11 @@ body {
   margin: 0;
   background: #f7f8f3;
   color: #17212b;
+}
+
+:root.dark body {
+  background: #101820;
+  color: #edf4ee;
 }
 
 button,

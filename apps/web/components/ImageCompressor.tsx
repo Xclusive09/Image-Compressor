@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useMemo, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useMemo, useState } from "react";
 import {
   CompressionData,
   CompressionMode,
@@ -24,6 +24,23 @@ export function ImageCompressor() {
   const [error, setError] = useState<string | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem("theme");
+    const prefersDark =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldUseDark = storedTheme ? storedTheme === "dark" : prefersDark;
+
+    setIsDarkMode(shouldUseDark);
+    document.documentElement.classList.toggle("dark", shouldUseDark);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    window.localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   const originalPreview = useMemo(() => {
     if (!file) {
@@ -100,23 +117,34 @@ export function ImageCompressor() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f8f3]">
+    <main className="min-h-screen bg-[#f7f8f3] transition-colors dark:bg-[#101820]">
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-3 border-b border-[#dbe0d2] pb-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-leaf">
-            Best possible quality under your selected target size.
-          </p>
+        <header className="flex flex-col gap-3 border-b border-[#dbe0d2] pb-5 dark:border-[#2b3c46]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold uppercase tracking-wide text-leaf dark:text-[#72d6a6]">
+              Best possible quality under your selected target size.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsDarkMode((current) => !current)}
+              className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#cbd5c0] bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-leaf dark:border-[#3b515f] dark:bg-[#17232d] dark:text-[#edf4ee] dark:hover:border-[#72d6a6]"
+              aria-pressed={isDarkMode}
+            >
+              <span aria-hidden="true">{isDarkMode ? "Light" : "Dark"}</span>
+              <span className="h-2.5 w-2.5 rounded-full bg-leaf dark:bg-[#f6b744]" />
+            </button>
+          </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-ink sm:text-4xl">
+              <h1 className="text-3xl font-bold text-ink dark:text-[#f5f8f1] sm:text-4xl">
                 NYSC Image Compressor
               </h1>
-              <p className="mt-2 max-w-2xl text-base text-[#4d5a63]">
+              <p className="mt-2 max-w-2xl text-base text-[#4d5a63] dark:text-[#b9c6ce]">
                 Compress your passport or photo to a specific file size with the
                 best possible quality.
               </p>
             </div>
-            <p className="max-w-sm text-sm text-[#65717a]">
+            <p className="max-w-sm text-sm text-[#65717a] dark:text-[#a6b3bb]">
               Very small sizes like 7KB may require visible quality reduction
               depending on the original image.
             </p>
@@ -124,8 +152,8 @@ export function ImageCompressor() {
         </header>
 
         <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="text-lg font-semibold text-ink">Upload image</h2>
+          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm transition-colors dark:border-[#2b3c46] dark:bg-[#17232d] sm:p-5">
+            <h2 className="text-lg font-semibold text-ink dark:text-[#f5f8f1]">Upload image</h2>
             <label
               onDragOver={(event) => {
                 event.preventDefault();
@@ -135,8 +163,8 @@ export function ImageCompressor() {
               onDrop={handleDrop}
               className={`mt-4 flex min-h-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-5 text-center transition ${
                 isDragging
-                  ? "border-leaf bg-[#edf8f2]"
-                  : "border-[#cbd5c0] bg-[#fbfcf7] hover:border-leaf"
+                  ? "border-leaf bg-[#edf8f2] dark:border-[#72d6a6] dark:bg-[#183329]"
+                  : "border-[#cbd5c0] bg-[#fbfcf7] hover:border-leaf dark:border-[#3b515f] dark:bg-[#111c24] dark:hover:border-[#72d6a6]"
               }`}
             >
               <input
@@ -146,33 +174,33 @@ export function ImageCompressor() {
                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                 onChange={handleInputChange}
               />
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e5f3eb] text-2xl text-leaf">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e5f3eb] text-2xl text-leaf dark:bg-[#214235] dark:text-[#72d6a6]">
                 +
               </span>
-              <span className="mt-3 text-base font-semibold text-ink">
+              <span className="mt-3 text-base font-semibold text-ink dark:text-[#f5f8f1]">
                 Drop your passport photo here
               </span>
-              <span className="mt-1 text-sm text-[#65717a]">
+              <span className="mt-1 text-sm text-[#65717a] dark:text-[#a6b3bb]">
                 or tap to choose a JPG, PNG, or WebP file
               </span>
             </label>
 
             {file && (
-              <div className="mt-4 rounded-lg bg-[#f2f5ec] p-4">
-                <p className="font-medium text-ink">{file.name}</p>
-                <p className="text-sm text-[#65717a]">
+              <div className="mt-4 rounded-lg bg-[#f2f5ec] p-4 dark:bg-[#111c24]">
+                <p className="break-words font-medium text-ink dark:text-[#f5f8f1]">{file.name}</p>
+                <p className="text-sm text-[#65717a] dark:text-[#a6b3bb]">
                   Original size: {formatKb(file.size / 1024)}
                 </p>
               </div>
             )}
           </section>
 
-          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="text-lg font-semibold text-ink">Compression settings</h2>
+          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm transition-colors dark:border-[#2b3c46] dark:bg-[#17232d] sm:p-5">
+            <h2 className="text-lg font-semibold text-ink dark:text-[#f5f8f1]">Compression settings</h2>
             <div className="mt-4">
               <label
                 htmlFor="targetKb"
-                className="text-sm font-medium text-[#34414b]"
+                className="text-sm font-medium text-[#34414b] dark:text-[#d8e1e5]"
               >
                 Target size in KB
               </label>
@@ -183,11 +211,11 @@ export function ImageCompressor() {
                 type="number"
                 value={targetKb}
                 onChange={(event) => setTargetKb(Number(event.target.value))}
-                className="mt-2 w-full rounded-lg border border-[#cbd5c0] px-3 py-3 text-lg font-semibold outline-none focus:border-leaf focus:ring-2 focus:ring-[#bfe6d1]"
+                className="mt-2 w-full rounded-lg border border-[#cbd5c0] bg-white px-3 py-3 text-lg font-semibold text-ink outline-none focus:border-leaf focus:ring-2 focus:ring-[#bfe6d1] dark:border-[#3b515f] dark:bg-[#101820] dark:text-[#f5f8f1] dark:focus:border-[#72d6a6] dark:focus:ring-[#25503b]"
               />
             </div>
 
-            <div className="mt-4 grid grid-cols-4 gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {presets.map((preset) => (
                 <button
                   key={preset}
@@ -195,8 +223,8 @@ export function ImageCompressor() {
                   onClick={() => setTargetKb(preset)}
                   className={`rounded-lg border px-2 py-3 text-sm font-semibold transition ${
                     targetKb === preset
-                      ? "border-leaf bg-leaf text-white"
-                      : "border-[#cbd5c0] bg-white text-ink hover:border-leaf"
+                      ? "border-leaf bg-leaf text-white dark:border-[#72d6a6] dark:bg-[#2a9f6b]"
+                      : "border-[#cbd5c0] bg-white text-ink hover:border-leaf dark:border-[#3b515f] dark:bg-[#101820] dark:text-[#edf4ee] dark:hover:border-[#72d6a6]"
                   }`}
                 >
                   {preset}KB
@@ -205,7 +233,7 @@ export function ImageCompressor() {
             </div>
 
             <fieldset className="mt-5">
-              <legend className="text-sm font-medium text-[#34414b]">
+              <legend className="text-sm font-medium text-[#34414b] dark:text-[#d8e1e5]">
                 Compression mode
               </legend>
               <div className="mt-2 grid gap-2">
@@ -214,11 +242,11 @@ export function ImageCompressor() {
                     key={item.value}
                     className={`flex cursor-pointer items-center justify-between rounded-lg border px-3 py-3 ${
                       mode === item.value
-                        ? "border-leaf bg-[#edf8f2]"
-                        : "border-[#dbe0d2] bg-white"
+                        ? "border-leaf bg-[#edf8f2] dark:border-[#72d6a6] dark:bg-[#183329]"
+                        : "border-[#dbe0d2] bg-white dark:border-[#3b515f] dark:bg-[#101820]"
                     }`}
                   >
-                    <span className="font-medium text-ink">{item.label}</span>
+                    <span className="font-medium text-ink dark:text-[#edf4ee]">{item.label}</span>
                     <input
                       type="radio"
                       name="mode"
@@ -242,7 +270,7 @@ export function ImageCompressor() {
             </button>
 
             {error && (
-              <p role="alert" className="mt-4 rounded-lg bg-[#fff1ed] p-3 text-sm text-[#a8422b]">
+              <p role="alert" className="mt-4 rounded-lg bg-[#fff1ed] p-3 text-sm text-[#a8422b] dark:bg-[#3c1f18] dark:text-[#ffb19c]">
                 {error}
               </p>
             )}
@@ -259,13 +287,13 @@ export function ImageCompressor() {
         </section>
 
         {result && (
-          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm sm:p-5">
+          <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm transition-colors dark:border-[#2b3c46] dark:bg-[#17232d] sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-lg font-semibold text-ink">Result</h2>
+              <h2 className="text-lg font-semibold text-ink dark:text-[#f5f8f1]">Result</h2>
               <button
                 type="button"
                 onClick={handleDownload}
-                className="rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#2b3844]"
+                className="rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#2b3844] dark:bg-[#edf4ee] dark:text-[#101820] dark:hover:bg-white"
               >
                 Download Compressed Image
               </button>
@@ -279,15 +307,27 @@ export function ImageCompressor() {
               <Metric label="Quality" value={`${result.quality}`} />
             </dl>
             {result.warning && (
-              <p className="mt-4 rounded-lg bg-[#fff8e6] p-3 text-sm text-[#855f13]">
+              <p className="mt-4 rounded-lg bg-[#fff8e6] p-3 text-sm text-[#855f13] dark:bg-[#3b3015] dark:text-[#f8d682]">
                 {result.warning}
               </p>
             )}
           </section>
         )}
 
-        <footer className="pb-3 text-center text-sm text-[#65717a]">
-          Images are processed in memory and are not stored permanently.
+        <footer className="flex flex-col items-center gap-1 pb-3 text-center text-sm text-[#65717a] dark:text-[#a6b3bb]">
+          <p>
+            &lt; built by{" "}
+            <a
+              href="https://xclusive.tech"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-leaf underline-offset-4 hover:underline dark:text-[#72d6a6]"
+            >
+              Xclusive
+            </a>{" "}
+            &gt;
+          </p>
+          <p>Images are processed in memory and are not stored permanently.</p>
         </footer>
       </section>
     </main>
@@ -304,9 +344,9 @@ function PreviewPanel({
   empty: string;
 }) {
   return (
-    <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm sm:p-5">
-      <h2 className="text-lg font-semibold text-ink">{title}</h2>
-      <div className="mt-4 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-[#eef2e8]">
+    <section className="rounded-lg border border-[#dbe0d2] bg-white p-4 shadow-sm transition-colors dark:border-[#2b3c46] dark:bg-[#17232d] sm:p-5">
+      <h2 className="text-lg font-semibold text-ink dark:text-[#f5f8f1]">{title}</h2>
+      <div className="mt-4 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-[#eef2e8] dark:bg-[#101820]">
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -315,7 +355,7 @@ function PreviewPanel({
             className="h-full w-full object-contain"
           />
         ) : (
-          <p className="px-4 text-center text-sm text-[#65717a]">{empty}</p>
+          <p className="px-4 text-center text-sm text-[#65717a] dark:text-[#a6b3bb]">{empty}</p>
         )}
       </div>
     </section>
@@ -324,11 +364,11 @@ function PreviewPanel({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-[#f2f5ec] p-3">
-      <dt className="text-xs font-medium uppercase tracking-wide text-[#65717a]">
+    <div className="rounded-lg bg-[#f2f5ec] p-3 dark:bg-[#101820]">
+      <dt className="text-xs font-medium uppercase tracking-wide text-[#65717a] dark:text-[#a6b3bb]">
         {label}
       </dt>
-      <dd className="mt-1 break-words text-base font-semibold text-ink">{value}</dd>
+      <dd className="mt-1 break-words text-base font-semibold text-ink dark:text-[#f5f8f1]">{value}</dd>
     </div>
   );
 }
