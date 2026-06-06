@@ -1,0 +1,30 @@
+{
+  "name": "nysc-image-compressor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NYSC Image Compressor monorepo",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "npm run dev --workspace @nysc-image-compressor/web",
+    "dev:api": "npm run start:dev --workspace @nysc-image-compressor/api",
+    "build": "npm run build:api && npm run build:web",
+    "build:web": "npm run build --workspace @nysc-image-compressor/web",
+    "build:api": "npm run build --workspace @nysc-image-compressor/api",
+    "test": "npm run test:api && npm run test:web",
+    "test:web": "npm run test --workspace @nysc-image-compressor/web",
+    "test:api": "npm run test --workspace @nysc-image-compressor/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
