@@ -127,11 +127,12 @@ export function ImageCompressor() {
             <button
               type="button"
               onClick={() => setIsDarkMode((current) => !current)}
-              className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#cbd5c0] bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-leaf dark:border-[#3b515f] dark:bg-[#17232d] dark:text-[#edf4ee] dark:hover:border-[#72d6a6]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#cbd5c0] bg-white text-ink shadow-sm transition hover:border-leaf dark:border-[#3b515f] dark:bg-[#17232d] dark:text-[#edf4ee] dark:hover:border-[#72d6a6]"
               aria-pressed={isDarkMode}
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
-              <span aria-hidden="true">{isDarkMode ? "Light" : "Dark"}</span>
-              <span className="h-2.5 w-2.5 rounded-full bg-leaf dark:bg-[#f6b744]" />
+              {isDarkMode ? <SunIcon /> : <MoonIcon />}
             </button>
           </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
@@ -318,7 +319,7 @@ export function ImageCompressor() {
           <p>
             &lt; built by{" "}
             <a
-              href="https://xclusive.tech"
+              href="https://xcluisve.tech"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-leaf underline-offset-4 hover:underline dark:text-[#72d6a6]"
@@ -370,5 +371,47 @@ function Metric({ label, value }: { label: string; value: string }) {
       </dt>
       <dd className="mt-1 break-words text-base font-semibold text-ink dark:text-[#f5f8f1]">{value}</dd>
     </div>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20.99 12.79A9 9 0 1 1 11.21 3.01 7 7 0 0 0 20.99 12.79z" />
+    </svg>
   );
 }
